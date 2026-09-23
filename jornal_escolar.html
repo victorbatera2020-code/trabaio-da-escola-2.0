@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jornal Escolar — Projeto Interdisciplinar</title>
+<style>
+:root{
+  --ink:#171717; --paper:#f7f3ea; --paper2:#fffdf8; --line:#cfc7b8;
+  --accent:#9d2020; --muted:#68635b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#ddd8ce;color:var(--ink);font-family:Georgia,"Times New Roman",serif}
+button,input,textarea,select{font:inherit}
+.topbar{position:sticky;top:0;z-index:20;background:#181818;color:#fff;padding:10px 14px;display:flex;gap:10px;align-items:center;justify-content:center;font-family:Arial,sans-serif}
+.topbar button{border:0;border-radius:7px;padding:9px 13px;cursor:pointer;background:#fff;color:#171717;font-weight:700}
+.topbar button.active{background:#9d2020;color:#fff}
+#app{max-width:1150px;margin:24px auto;background:var(--paper2);box-shadow:0 5px 30px #0002;min-height:100vh}
+header{padding:28px 38px 18px;border-bottom:5px double var(--ink)}
+.masthead{text-align:center}
+.kicker{text-transform:uppercase;letter-spacing:3px;font:700 12px Arial;color:var(--accent)}
+h1{font-size:58px;line-height:.9;margin:8px 0 6px;text-transform:uppercase}
+.subtitle{font:600 13px Arial;letter-spacing:1px}
+.meta{display:flex;justify-content:space-between;border-top:1px solid var(--line);margin-top:16px;padding-top:8px;font:12px Arial;color:#4b4740}
+main{padding:24px 38px}
+.hero{display:grid;grid-template-columns:1.5fr 1fr;gap:24px;border-bottom:1px solid var(--line);padding-bottom:24px}
+.hero-media{min-height:310px;background:#ddd;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hero-media img,.hero-media video{width:100%;height:100%;min-height:310px;object-fit:cover}
+.placeholder{font:700 18px Arial;color:#777;text-align:center;padding:30px}
+.hero h2{font-size:40px;line-height:1;margin:8px 0 12px}
+.category{color:var(--accent);font:bold 12px Arial;text-transform:uppercase;letter-spacing:1.5px}
+.story-text{font-size:18px;line-height:1.55}
+.caption{font:11px Arial;color:var(--muted);margin-top:6px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:24px}
+.card{border-top:3px solid var(--ink);padding-top:10px}
+.card-media{height:170px;background:#e3dfd6;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.card-media img,.card-media video{width:100%;height:100%;object-fit:cover}
+.card h3{font-size:23px;line-height:1.05;margin:8px 0}
+.card p{font-size:15px;line-height:1.4;margin:0}
+.editor{display:none;font-family:Arial,sans-serif;padding:25px 38px;background:#f1eee7;border-top:1px solid var(--line)}
+.editor.show{display:block}
+.editor h2{font-family:Georgia;margin-top:0}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.full{grid-column:1/-1}
+label{font-weight:700;font-size:13px}
+input,textarea,select{border:1px solid #bbb5aa;border-radius:6px;padding:10px;background:white}
+textarea{min-height:105px;resize:vertical}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.actions button{border:0;border-radius:6px;padding:10px 14px;cursor:pointer;font-weight:700}
+.primary{background:#9d2020;color:#fff}.secondary{background:#222;color:#fff}.light{background:#ddd}
+.story-editor{background:white;border:1px solid #ccc;padding:14px;border-radius:8px;margin-top:18px}
+.story-editor h3{margin:0 0 8px}
+footer{padding:18px 38px;border-top:3px double var(--ink);font:12px Arial;color:#666;display:flex;justify-content:space-between}
+@media(max-width:800px){
+ h1{font-size:40px}.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}
+ main,header,footer,.editor{padding-left:18px;padding-right:18px}
+}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.meta{flex-direction:column;gap:4px}}
+@media print{
+ .topbar,.editor{display:none!important}
+ body{background:#fff}.app{box-shadow:none}
+ #app{margin:0;box-shadow:none}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="active" onclick="showPage('jornal')">📰 Jornal</button>
+  <button onclick="showPage('editor')">✏️ Editar</button>
+  <button onclick="window.print()">🖨️ Imprimir / PDF</button>
+</div>
+
+<div id="app">
+<header>
+  <div class="masthead">
+    <div class="kicker" id="projectKicker">Projeto Interdisciplinar</div>
+    <h1 id="paperName">O JORNAL DA ESCOLA</h1>
+    <div class="subtitle" id="paperSubtitle">Relações étnico-raciais • Informação • Cultura • Comunidade</div>
+  </div>
+  <div class="meta"><span id="edition">Edição nº 01</span><span id="date">23 de setembro de 2026</span><span>Grupo 4 — Design e Diagramação</span></div>
+</header>
+
+<main id="newsPage"></main>
+
+<section class="editor" id="editorPage">
+  <h2>Painel de edição</h2>
+  <p>Edite os textos abaixo. As alterações ficam salvas neste navegador. Para imagens, escolha um arquivo do computador/celular. Para vídeos, cole um link do YouTube ou de outro vídeo público.</p>
+
+  <div class="formgrid">
+    <div class="field"><label>Nome do jornal</label><input id="eName"></div>
+    <div class="field"><label>Subtítulo</label><input id="eSubtitle"></div>
+    <div class="field"><label>Projeto / tema</label><input id="eKicker"></div>
+    <div class="field"><label>Edição</label><input id="eEdition"></div>
+  </div>
+  <div class="actions">
+    <button class="primary" onclick="saveHeader()">Salvar cabeçalho</button>
+    <button class="light" onclick="resetAll()">Restaurar exemplo</button>
+  </div>
+
+  <div id="storyEditors"></div>
+  <div class="actions">
+    <button class="primary" onclick="addStory()">＋ Adicionar notícia</button>
+    <button class="secondary" onclick="showPage('jornal')">Ver jornal</button>
+  </div>
+</section>
+
+<footer><span>Jornal escolar • Projeto Interdisciplinar</span><span>Versão para impressão e online</span></footer>
+</div>
+
+<script>
+const defaultData={
+ header:{name:"O JORNAL DA ESCOLA",subtitle:"Relações étnico-raciais • Informação • Cultura • Comunidade",kicker:"Projeto Interdisciplinar",edition:"Edição nº 01"},
+ stories:[
+  {title:"Título da notícia principal",text:"Escreva aqui um pequeno texto explicando o conteúdo da foto ou do vídeo. Apresente o que aconteceu, onde aconteceu e por que o assunto é importante para o projeto.",category:"DESTAQUE",mediaType:"image",media:"",caption:"Legenda da mídia."},
+  {title:"Cultura e identidade",text:"Use este espaço para explicar a primeira mídia do jornal de forma curta e objetiva.",category:"CULTURA",mediaType:"image",media:"",caption:"Legenda da foto."},
+  {title:"Entrevista ou reportagem",text:"Conte resumidamente o que aparece no vídeo e destaque a informação principal.",category:"REPORTAGEM",mediaType:"video",media:"",caption:"Vídeo da reportagem."},
+  {title:"Vozes da escola",text:"Registre uma atividade, depoimento ou acontecimento da comunidade escolar.",category:"ESCOLA",mediaType:"image",media:"",caption:"Registro da atividade."}
+ ]};
+
+let data=JSON.parse(localStorage.getItem("jornalEscolarData")||"null")||defaultData;
+
+function save(){localStorage.setItem("jornalEscolarData",JSON.stringify(data));render();renderEditors()}
+function esc(s){return (s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function mediaHTML(s){
+ if(s.mediaType==="video" && s.media) return `<video controls preload="metadata" src="${esc(s.media)}"></video>`;
+ if(s.media) return `<img src="${esc(s.media)}" alt="">`;
+ return `<div class="placeholder">📷<br>Adicione uma foto ou vídeo</div>`;
+}
+function render(){
+ document.getElementById("paperName").textContent=data.header.name;
+ document.getElementById("paperSubtitle").textContent=data.header.subtitle;
+ document.getElementById("projectKicker").textContent=data.header.kicker;
+ document.getElementById("edition").textContent=data.header.edition;
+ document.getElementById("date").textContent=new Date().toLocaleDateString("pt-BR",{day:"numeric",month:"long",year:"numeric"});
+ const s=data.stories;
+ let html="";
+ if(s[0]){
+  html+=`<article class="hero"><div><div class="hero-media">${mediaHTML(s[0])}</div><div class="caption">${esc(s[0].caption)}</div></div><div><div class="category">${esc(s[0].category)}</div><h2>${esc(s[0].title)}</h2><div class="story-text">${esc(s[0].text).replace(/\n/g,"<br>")}</div></div></article>`;
+ }
+ if(s.length>1){
+  html+=`<div class="grid">`+s.slice(1).map(x=>`<article class="card"><div class="card-media">${mediaHTML(x)}</div><div class="caption">${esc(x.caption)}</div><div class="category">${esc(x.category)}</div><h3>${esc(x.title)}</h3><p>${esc(x.text)}</p></article>`).join("")+`</div>`;
+ }
+ document.getElementById("newsPage").innerHTML=html;
+}
+function renderEditors(){
+ document.getElementById("eName").value=data.header.name;
+ document.getElementById("eSubtitle").value=data.header.subtitle;
+ document.getElementById("eKicker").value=data.header.kicker;
+ document.getElementById("eEdition").value=data.header.edition;
+ document.getElementById("storyEditors").innerHTML=data.stories.map((s,i)=>`
+ <div class="story-editor">
+  <h3>${i===0?"⭐ Notícia principal":"📰 Notícia "+(i+1)}</h3>
+  <div class="formgrid">
+   <div class="field"><label>Categoria</label><input value="${esc(s.category)}" oninput="data.stories[${i}].category=this.value"></div>
+   <div class="field"><label>Título</label><input value="${esc(s.title)}" oninput="data.stories[${i}].title=this.value"></div>
+   <div class="field full"><label>Texto curto</label><textarea oninput="data.stories[${i}].text=this.value">${esc(s.text)}</textarea></div>
+   <div class="field"><label>Tipo de mídia</label><select onchange="data.stories[${i}].mediaType=this.value;save()"><option value="image" ${s.mediaType==="image"?"selected":""}>Foto</option><option value="video" ${s.mediaType==="video"?"selected":""}>Vídeo</option></select></div>
+   <div class="field"><label>Legenda</label><input value="${esc(s.caption)}" oninput="data.stories[${i}].caption=this.value"></div>
+   <div class="field full"><label>${s.mediaType==="video"?"Link ou arquivo de vídeo":"Foto do computador/celular"}</label>
+     ${s.mediaType==="video"?`<input value="${esc(s.media||"")}" placeholder="Cole um link direto para o vídeo" onchange="data.stories[${i}].media=this.value;save()">`:
+     `<input type="file" accept="image/*" onchange="readMedia(event,${i})">`}
+   </div>
+  </div>
+  <div class="actions"><button class="primary" onclick="save()">Salvar notícia</button><button class="light" onclick="deleteStory(${i})">Excluir</button></div>
+ </div>`).join("");
+}
+function readMedia(ev,i){
+ const f=ev.target.files[0]; if(!f)return;
+ const r=new FileReader(); r.onload=()=>{data.stories[i].media=r.result;save()}; r.readAsDataURL(f);
+}
+function saveHeader(){
+ data.header={name:eName.value,subtitle:eSubtitle.value,kicker:eKicker.value,edition:eEdition.value};save();
+}
+function addStory(){data.stories.push({title:"Nova notícia",text:"Escreva aqui o texto da notícia.",category:"NOTÍCIA",mediaType:"image",media:"",caption:"Legenda da mídia."});save();showPage("editor")}
+function deleteStory(i){if(confirm("Excluir esta notícia?")){data.stories.splice(i,1);save()}}
+function resetAll(){if(confirm("Restaurar o conteúdo de exemplo?")){data=JSON.parse(JSON.stringify(defaultData));save()}}
+function showPage(p){
+ document.getElementById("newsPage").style.display=p==="jornal"?"block":"none";
+ document.getElementById("editorPage").classList.toggle("show",p==="editor");
+ document.querySelectorAll(".topbar button").forEach((b,i)=>b.classList.toggle("active",(p==="jornal"&&i===0)||(p==="editor"&&i===1)));
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+render();renderEditors();
+</script>
+</body>
+</html>
